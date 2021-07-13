@@ -8,13 +8,14 @@ import org.openqa.selenium.support.PageFactory;
 
 public class HomePageFactory {
 	
-	@FindBy(xpath = "//input[@class='commonTextComp track_search_click']")
+	
+	@FindBy(id="headerSearch")
 	WebElement selectSearchTab;
 	
-	@FindBy(xpath = "//input[@class='commonTextComp track_search_click']")
+	@FindBy(name="q")
 	WebElement enterProduct;
 	
-	@FindBy(xpath = "//span[@class='spriteIcon-Aprevamp searchSpriteIcon']")
+	@FindBy(xpath = "//button[@class='js-header-search-handle']")
 	WebElement selectSearchBtn;
 	
 	@FindBy(xpath = "//h4[@class='report-title']")
@@ -25,6 +26,9 @@ public class HomePageFactory {
 	
 	@FindBy(xpath = "//div[@class='headerDropdown']")
 	WebElement selectDropDown;
+	
+	@FindBy(xpath = "//div[@class='no-results-content__text-block text']")
+	WebElement errorMessage;
 	
 	
 	WebDriver driver;
@@ -38,7 +42,7 @@ public class HomePageFactory {
 	public void clickSearchTab()
 	{
 		selectSearchTab.click();
-		//add weights after click
+	
 	}
 	
 	public void enterProduct(String prod)
@@ -61,9 +65,9 @@ public class HomePageFactory {
 		invalidProduct.sendKeys(prod);
 	}
 	
-	public void dispTitle()
+	public String dispTitle()
 	{
-		driver.getTitle();
+		return driver.getTitle();
 	}
 	
 	public void clickDropDown()
@@ -71,6 +75,15 @@ public class HomePageFactory {
 		selectDropDown.click();
 	}
 	
+	public String dispError()
+	{
+		return errorMessage.getText();
+	}
+	
+	public void endScenario()
+	{
+		driver.quit();
+	}
 	public void selectUserType(String user)
 	{
 		driver.findElement(By.linkText(user)).click();

@@ -1,10 +1,17 @@
 package stepDefinitions;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
+
+import org.junit.Before;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.PageFactory;
+import org.testng.Assert;
+import org.testng.AssertJUnit;
 
+import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -12,19 +19,36 @@ import pageFactory.HomePageFactory;
 
 public class HomePage {
 	
-	String baseUrl="https://www.asianpaints.com/";
-	WebDriver driver;
+	
 	HomePageFactory homepf;
 	
-	
-	@Given("user is in the home page of Asian Paints")
-	public void user_is_in_the_home_page_of_Asian_Paints() 
+	@Before
+	public void launchApplication() throws IOException
 	{
-		System.setProperty("webdriver.chrome.driver", "D:\\Software\\chromedriver.exe\\");
+		Properties property=new Properties();
+		FileInputStream input=new FileInputStream("src\\test\\resources\\Properties\\Config.properties");
+		property.load(input);
+		String driverPath=property.getProperty("driverPath");
+		System.setProperty("webdriver.chrome.driver", driverPath);
+		String baseUrl=property.getProperty("baseUrl");
 		WebDriver driver=new ChromeDriver();
 		driver.manage().window().maximize();
 		driver.get(baseUrl);
 		homepf=PageFactory.initElements(driver, HomePageFactory.class);
+		
+	}
+	
+	
+	
+	@Given("user is in the home page of Asian Paints")
+	public void user_is_in_the_home_page_of_Asian_Paints() throws IOException 
+	{
+		launchApplication();
+		String actualTitle="Wall Paints, Home Painting & Paint Colour Combinations in India - Asian Paints";
+		String expectedTitle=homepf.dispTitle();
+		Assert.assertEquals(actualTitle, expectedTitle);
+		System.out.println("Verified");
+		
 	}
 	
 	@When("the user clicks on search")
@@ -54,7 +78,7 @@ public class HomePage {
 	@Then("the products are displayed")
 	public void the_products_are_displayed() 
 	{
-	    System.out.println("Product displayed");
+	    System.out.println(homepf.dispTitle());
 	}
 
 	@When("user enters the search as {string}")
@@ -66,19 +90,25 @@ public class HomePage {
 	@Then("the invalid search message is displayed")
 	public void the_invalid_search_message_is_displayed()
 	{
-		System.out.println("Invalid Search");
+		
+		String expectedError=homepf.dispError();
+		String actualError="Sorry, there seem to be no results matching your search.\n"
+				+ "Would you want to try some of our popular search terms from below?";
+		Assert.assertEquals(actualError, expectedError);
+		System.out.println(expectedError);
+		
 	}
 	
 	//User types
 	 
 	@Given("the user is in the home page of Asian Paints")
-	public void the_user_is_in_the_home_page_of_asian_paints() 
+	public void the_user_is_in_the_home_page_of_asian_paints() throws IOException 
 	{
-		System.setProperty("webdriver.chrome.driver", "D:\\Software\\chromedriver.exe\\");
-		WebDriver driver=new ChromeDriver();
-		driver.manage().window().maximize();
-		driver.get(baseUrl);
-		homepf=PageFactory.initElements(driver, HomePageFactory.class);
+		launchApplication();
+		String homePageTitle="Wall Paints, Home Painting & Paint Colour Combinations in India - Asian Paints";
+		String expectedTitle=homepf.dispTitle();
+		AssertJUnit.assertEquals(homePageTitle,expectedTitle);
+		System.out.println("Verified");
 	}
 
 	@Given("user clicks the dropdown in the header")
@@ -95,8 +125,14 @@ public class HomePage {
 	@Then("user is navigated to that page")
 	public void user_is_navigated_to_that_page()
 	{
-	   System.out.println("Driver navigated to the page");
+	   System.out.println(homepf.dispTitle());
 	}
 
+	@After
+	public void endScene()
+	{
+		homepf.endScenario();
+	}
+	
 
 }
